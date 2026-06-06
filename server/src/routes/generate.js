@@ -10,6 +10,9 @@ router.post('/', async (ctx) => {
   
   // Support input_data as alias for rawScript (backward compatibility)
   const scriptContent = rawScript || input_data || '';
+  
+  // Explicitly set status to 200 for SSE
+  ctx.status = 200;
 
   // Get active config and template
   let config, template;

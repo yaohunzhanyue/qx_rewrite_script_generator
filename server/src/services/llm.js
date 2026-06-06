@@ -5,6 +5,10 @@
 export async function callLLMStream(config, template, userInput, onChunk) {
   const { base_url, api_key, model } = config;
   
+  // Clean base_url: remove trailing slash and /v1 if present
+  let cleanBaseUrl = base_url.replace(/\/$/, '');
+  cleanBaseUrl = cleanBaseUrl.replace(/\/v1\/?$/, '');
+  
   // Build messages
   const systemPrompt = template.system_prompt;
   const userPrompt = template.user_prompt
@@ -17,7 +21,7 @@ export async function callLLMStream(config, template, userInput, onChunk) {
     { role: 'user', content: userPrompt }
   ];
 
-  const response = await fetch(`${base_url}/v1/chat/completions`, {
+  const response = await fetch(`${cleanBaseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -72,6 +76,10 @@ export async function callLLMStream(config, template, userInput, onChunk) {
 export async function callLLM(config, template, userInput) {
   const { base_url, api_key, model } = config;
   
+  // Clean base_url: remove trailing slash and /v1 if present
+  let cleanBaseUrl = base_url.replace(/\/$/, '');
+  cleanBaseUrl = cleanBaseUrl.replace(/\/v1\/?$/, '');
+  
   const systemPrompt = template.system_prompt;
   const userPrompt = template.user_prompt
     .replace('{{rawScript}}', userInput.rawScript || '无')
@@ -83,7 +91,7 @@ export async function callLLM(config, template, userInput) {
     { role: 'user', content: userPrompt }
   ];
 
-  const response = await fetch(`${base_url}/v1/chat/completions`, {
+  const response = await fetch(`${cleanBaseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

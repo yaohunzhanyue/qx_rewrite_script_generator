@@ -151,12 +151,20 @@
         <el-form-item label="模板名称" required>
           <el-input v-model="templateForm.name" placeholder="例如: 默认模板" />
         </el-form-item>
-        <el-form-item label="模板内容" required>
+        <el-form-item label="系统提示词" required>
           <el-input
-            v-model="templateForm.content"
+            v-model="templateForm.system_prompt"
             type="textarea"
-            :rows="15"
-            placeholder="输入提示词模板内容..."
+            :rows="10"
+            placeholder="输入系统提示词（定义 AI 角色、任务等）..."
+          />
+        </el-form-item>
+        <el-form-item label="用户提示词" required>
+          <el-input
+            v-model="templateForm.user_prompt"
+            type="textarea"
+            :rows="5"
+            placeholder="输入用户提示词模板，可使用 {{rawScript}}、{{originalResponse}}、{{vipResponse}} 变量..."
           />
         </el-form-item>
       </el-form>
@@ -226,7 +234,8 @@ const configForm = ref({
 
 const templateForm = ref({
   name: '',
-  content: ''
+  system_prompt: '',
+  user_prompt: ''
 })
 
 function showConfigDialog(config = null) {
@@ -301,15 +310,19 @@ async function deleteConfig(id) {
 function showTemplateDialog(template = null) {
   editingTemplate.value = template
   if (template) {
-    templateForm.value = { ...template }
+    templateForm.value = {
+      name: template.name,
+      system_prompt: template.system_prompt,
+      user_prompt: template.user_prompt
+    }
   } else {
-    templateForm.value = { name: '', content: '' }
+    templateForm.value = { name: '', system_prompt: '', user_prompt: '' }
   }
   templateDialogVisible.value = true
 }
 
 async function saveTemplate() {
-  if (!templateForm.value.name || !templateForm.value.content) {
+  if (!templateForm.value.name || !templateForm.value.system_prompt || !templateForm.value.user_prompt) {
     ElMessage.warning('请填写所有必填项')
     return
   }

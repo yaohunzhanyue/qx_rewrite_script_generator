@@ -95,7 +95,12 @@ router.post('/:id/test', async (ctx) => {
   }
 
   try {
-    const response = await fetch(`${config.base_url}/v1/models`, {
+    // Remove trailing slash and /v1 from base_url to get base endpoint
+    let baseUrl = config.base_url.replace(/\/$/, '');
+    // If base_url already ends with /v1 or /v1/, remove it to avoid double /v1
+    baseUrl = baseUrl.replace(/\/v1\/?$/, '');
+    
+    const response = await fetch(`${baseUrl}/v1/models`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${config.api_key}`,
