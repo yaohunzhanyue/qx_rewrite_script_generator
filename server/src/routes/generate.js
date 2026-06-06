@@ -6,7 +6,10 @@ const router = new Router();
 
 // POST generate script with SSE streaming
 router.post('/', async (ctx) => {
-  const { rawScript, originalResponse, vipResponse, taskId, apiConfigId, promptTemplateId } = ctx.request.body;
+  const { rawScript, originalResponse, vipResponse, taskId, apiConfigId, promptTemplateId, input_data } = ctx.request.body;
+  
+  // Support input_data as alias for rawScript (backward compatibility)
+  const scriptContent = rawScript || input_data || '';
 
   // Get active config and template
   let config, template;
@@ -37,7 +40,7 @@ router.post('/', async (ctx) => {
 
   // Create or update task
   let task;
-  const inputData = JSON.stringify({ rawScript, originalResponse, vipResponse });
+  const inputData = JSON.stringify({ rawScript: scriptContent, originalResponse, vipResponse });
 
   if (taskId) {
     dbHelper.prepare(`
@@ -60,7 +63,7 @@ router.post('/', async (ctx) => {
   ctx.set('Connection', 'keep-alive');
   ctx.set('X-Accel-Buffering', 'no');
 
-  const userInput = { rawScript, originalResponse, vipResponse };
+  const userInput = { rawScript: scriptContent, originalResponse, vipResponse };
   let fullOutput = '';
 
   try {

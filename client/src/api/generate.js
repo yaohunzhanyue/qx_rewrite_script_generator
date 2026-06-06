@@ -40,11 +40,11 @@ export async function generateScript(inputData, onChunk, onComplete) {
         }
         try {
           const parsed = JSON.parse(data)
-          if (parsed.content) {
+          if (parsed.type === 'chunk' && parsed.content) {
             onChunk(parsed.content)
           }
-          if (parsed.task_id) {
-            onComplete(parsed.task_id)
+          if (parsed.type === 'done' && parsed.taskId) {
+            onComplete(parsed.taskId)
           }
           if (parsed.error) {
             throw new Error(parsed.error)
