@@ -34,35 +34,51 @@ qx_script/
 
 ## 安装依赖
 
-分别进入前后端目录安装依赖：
+在项目根目录执行：
 
 ```bash
-cd server
-npm install
+npm run install:all
+```
 
-cd ../client
-npm install
+或分别安装：
+
+```bash
+cd server && npm install
+cd ../client && npm install
 ```
 
 ## 启动项目
 
-### 启动后端
+### 方式一：统一启动（推荐）
+
+在项目根目录执行：
 
 ```bash
-cd server
+npm install  # 首次需要安装 concurrently
 npm run dev
 ```
 
-默认监听：`http://localhost:3000`
+这将同时启动前端和后端服务：
+- 后端：`http://localhost:3000`
+- 前端：`http://localhost:5173`
 
-### 启动前端
+### 方式二：VSCode 调试启动
+
+在 VSCode 中按 `F5` 或使用调试面板：
+- **Dev: All** - 同时启动前后端
+- **Dev: Backend** - 仅启动后端
+- **Dev: Frontend** - 仅启动前端（Chrome 调试）
+- **Debug: All** - 调试模式启动前后端
+
+### 方式三：分别启动
 
 ```bash
-cd client
-npm run dev
-```
+# 终端 1 - 后端
+cd server && npm run dev
 
-默认监听：`http://localhost:5173`
+# 终端 2 - 前端
+cd client && npm run dev
+```
 
 ## 使用说明
 
