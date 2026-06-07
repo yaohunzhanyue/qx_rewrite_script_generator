@@ -43,18 +43,10 @@ const DEFAULT_TEMPLATE = {
 
 // 初始化默认数据
 function initDefaultData() {
-  console.log('[Storage] 初始化存储...')
-  
   // 初始化提示词模板
   const templates = getPromptTemplates()
-  console.log('[Storage] 当前模板数量:', templates.length)
-  
   if (templates.length === 0) {
-    console.log('[Storage] 创建默认模板...')
     savePromptTemplate(DEFAULT_TEMPLATE)
-    console.log('[Storage] 默认模板已创建')
-  } else {
-    console.log('[Storage] 模板已存在:', templates.map(t => t.name))
   }
 }
 
@@ -119,7 +111,6 @@ export function getActiveTemplate() {
 
 export function savePromptTemplate(template) {
   const templates = getPromptTemplates()
-  console.log('[Storage] savePromptTemplate, 现有模板:', templates.length, 'template.id:', template.id)
   
   // 检查是否需要更新或新增
   if (template.id && templates.findIndex(t => t.id === template.id) !== -1) {
@@ -136,13 +127,7 @@ export function savePromptTemplate(template) {
     templates.push(template)
   }
   
-  console.log('[Storage] 保存模板到 localStorage:', templates.length)
   localStorage.setItem(STORAGE_KEYS.PROMPT_TEMPLATES, JSON.stringify(templates))
-  
-  // 验证保存
-  const saved = localStorage.getItem(STORAGE_KEYS.PROMPT_TEMPLATES)
-  console.log('[Storage] 验证保存, 长度:', saved ? saved.length : 0)
-  
   return template
 }
 

@@ -105,23 +105,19 @@ async function loadTasks() {
 
 async function loadConfigs() {
   try {
-    console.log('[App] loadConfigs 开始...')
     apiConfigs.value = getApiConfigs()
     activeConfig.value = getActiveConfig()
-    console.log('[App] loadConfigs 完成, 配置数量:', apiConfigs.value.length)
   } catch (err) {
-    console.error('[App] Failed to load configs:', err)
+    console.error('Failed to load configs:', err)
   }
 }
 
 async function loadTemplates() {
   try {
-    console.log('[App] loadTemplates 开始...')
     promptTemplates.value = getPromptTemplates()
     activeTemplate.value = getActiveTemplate()
-    console.log('[App] loadTemplates 完成, 模板数量:', promptTemplates.value.length)
   } catch (err) {
-    console.error('[App] Failed to load templates:', err)
+    console.error('Failed to load templates:', err)
   }
 }
 
