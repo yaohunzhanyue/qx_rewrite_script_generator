@@ -26,9 +26,3 @@ export function deletePromptTemplate(id) {
 export function activatePromptTemplate(id) {
   return storage.activatePromptTemplate(id)
 }
-
-export async function activatePromptTemplate(id) {
-  return request(`/prompt-template/${id}/activate`, {
-    method: 'POST'
-  })
-}

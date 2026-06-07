@@ -35,15 +35,3 @@ export async function testApiConfig(id) {
   }
   return llm.testApiConnection(config)
 }
-
-export async function activateApiConfig(id) {
-  return request(`/api-config/${id}/activate`, {
-    method: 'POST'
-  })
-}
-
-export async function testApiConfig(id) {
-  return request(`/api-config/${id}/test`, {
-    method: 'POST'
-  })
-}

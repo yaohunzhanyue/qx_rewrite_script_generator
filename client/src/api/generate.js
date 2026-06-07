@@ -69,4 +69,3 @@ export async function generateScript(inputData, onChunk, onComplete) {
     throw err
   }
 }
-}
