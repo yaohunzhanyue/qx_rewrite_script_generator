@@ -1,31 +1,30 @@
-import { request } from './index'
+/**
+ * 提示词模板相关函数 - 使用本地存储
+ */
+import * as storage from '../utils/storage'
 
-export async function getPromptTemplates() {
-  return request('/prompt-template')
+export function getPromptTemplates() {
+  return storage.getPromptTemplates()
 }
 
-export async function getActiveTemplate() {
-  return request('/prompt-template/active')
+export function getActiveTemplate() {
+  return storage.getActiveTemplate()
 }
 
-export async function createPromptTemplate(data) {
-  return request('/prompt-template', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  })
+export function createPromptTemplate(data) {
+  return storage.savePromptTemplate(data)
 }
 
-export async function updatePromptTemplate(id, data) {
-  return request(`/prompt-template/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  })
+export function updatePromptTemplate(id, data) {
+  return storage.savePromptTemplate({ ...data, id })
 }
 
-export async function deletePromptTemplate(id) {
-  return request(`/prompt-template/${id}`, {
-    method: 'DELETE'
-  })
+export function deletePromptTemplate(id) {
+  return storage.deletePromptTemplate(id)
+}
+
+export function activatePromptTemplate(id) {
+  return storage.activatePromptTemplate(id)
 }
 
 export async function activatePromptTemplate(id) {

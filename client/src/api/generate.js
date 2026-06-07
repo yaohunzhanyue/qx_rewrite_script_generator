@@ -1,61 +1,72 @@
-import { API_BASE } from './index'
+/**
+ * 生成脚本相关函数 - 前端直接调用 LLM
+ */
+import * as storage from '../utils/storage'
+import * as llm from '../utils/llm'
 
 /**
- * Generate script with SSE streaming
- * @param {string} inputData - The input script data
- * @param {function} onChunk - Callback for each chunk of output
- * @param {function} onComplete - Callback when generation completes, receives taskId
+ * 生成脚本（流式输出）
+ * @param {string} inputData - JSON 字符串 { rawScript, originalResponse, vipResponse }
+ * @param {function} onChunk - 每个块的回调
+ * @param {function} onComplete - 完成时的回调，接收 taskId
  */
 export async function generateScript(inputData, onChunk, onComplete) {
-  const response = await fetch(`${API_BASE}/generate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ input_data: inputData })
+  // 解析输入数据
+  let userInput
+  try {
+    userInput = JSON.parse(inputData)
+  } catch (e) {
+    // 如果不是 JSON，当作 rawScript
+    userInput = { rawScript: inputData, originalResponse: '', vipResponse: '' }
+  }
+
+  // 获取配置和模板
+  const config = storage.getActiveConfig()
+  const template = storage.getActiveTemplate()
+
+  if (!config) {
+    throw new Error('请先在设置中配置 API')
+  }
+
+  if (!template) {
+    throw new Error('未找到提示词模板')
+  }
+
+  // 创建任务记录
+  const task = storage.saveTask({
+    name: `任务 ${new Date().toLocaleString()}`,
+    input_data: inputData,
+    api_config_id: config.id,
+    prompt_template_id: template.id,
+    status: 'streaming',
+    output_script: ''
   })
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Generation failed' }))
-    throw new Error(error.message || `HTTP ${response.status}`)
+  let fullOutput = ''
+
+  try {
+    // 流式调用 LLM
+    await llm.callLLMStream(config, template, userInput, (chunk) => {
+      fullOutput += chunk
+      onChunk(chunk)
+    })
+
+    // 更新任务为完成
+    storage.saveTask({
+      ...task,
+      output_script: fullOutput,
+      status: 'completed'
+    })
+
+    onComplete(task.id)
+  } catch (err) {
+    // 更新任务为失败
+    storage.saveTask({
+      ...task,
+      status: 'failed',
+      error_message: err.message
+    })
+    throw err
   }
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || ''
-
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6)
-        if (data === '[DONE]') {
-          continue
-        }
-        try {
-          const parsed = JSON.parse(data)
-          if (parsed.type === 'chunk' && parsed.content) {
-            onChunk(parsed.content)
-          }
-          if (parsed.type === 'done' && parsed.taskId) {
-            onComplete(parsed.taskId)
-          }
-          if (parsed.error) {
-            throw new Error(parsed.error)
-          }
-        } catch (e) {
-          // If it's not JSON, it might be raw content
-          if (data && data !== '[DONE]') {
-            onChunk(data)
-          }
-        }
-      }
-    }
-  }
+}
 }

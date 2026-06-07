@@ -4,12 +4,8 @@
   "description": "QX Script Generator - 将原始抓包脚本转换为 Quantumult X Rewrite 脚本",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
-    "install:all": "cd server && npm install && cd ../client && npm install"
-  },
-  "devDependencies": {
-    "concurrently": "^10.0.3"
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "preview": "cd client && npm run preview"
   }
 }

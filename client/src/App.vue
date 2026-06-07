@@ -71,6 +71,7 @@ import { getApiConfigs, getActiveConfig } from './api/api-config'
 import { getPromptTemplates, getActiveTemplate } from './api/prompt-template'
 import { getTasks, createTask, updateTask, deleteTask as deleteTaskApi, renameTask as renameTaskApi, archiveTask as archiveTaskApi } from './api/tasks'
 import { generateScript } from './api/generate'
+import { initStorage } from './utils/storage'
 
 // State
 const tasks = ref([])
@@ -92,7 +93,7 @@ const activeTask = computed(() => {
 // Methods
 async function loadTasks() {
   try {
-    const data = await getTasks()
+    const data = getTasks()
     tasks.value = data
     if (!activeTaskId.value && data.length > 0) {
       activeTaskId.value = data[0].id
@@ -104,8 +105,8 @@ async function loadTasks() {
 
 async function loadConfigs() {
   try {
-    apiConfigs.value = await getApiConfigs()
-    activeConfig.value = await getActiveConfig()
+    apiConfigs.value = getApiConfigs()
+    activeConfig.value = getActiveConfig()
   } catch (err) {
     console.error('Failed to load configs:', err)
   }
@@ -113,8 +114,8 @@ async function loadConfigs() {
 
 async function loadTemplates() {
   try {
-    promptTemplates.value = await getPromptTemplates()
-    activeTemplate.value = await getActiveTemplate()
+    promptTemplates.value = getPromptTemplates()
+    activeTemplate.value = getActiveTemplate()
   } catch (err) {
     console.error('Failed to load templates:', err)
   }
@@ -210,6 +211,7 @@ async function handleGenerate(inputData) {
 
 // Initialize
 onMounted(async () => {
+  initStorage() // 初始化本地存储
   await loadConfigs()
   await loadTemplates()
   await loadTasks()

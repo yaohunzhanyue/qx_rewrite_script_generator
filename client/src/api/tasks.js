@@ -1,43 +1,32 @@
-import { request } from './index'
+/**
+ * 任务历史相关函数 - 使用本地存储
+ */
+import * as storage from '../utils/storage'
 
-export async function getTasks() {
-  return request('/tasks')
+export function getTasks() {
+  return storage.getTasks()
 }
 
-export async function getTask(id) {
-  return request(`/tasks/${id}`)
+export function getTask(id) {
+  return storage.getTask(id)
 }
 
-export async function createTask(data) {
-  return request('/tasks', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  })
+export function createTask(data) {
+  return storage.saveTask(data)
 }
 
-export async function updateTask(id, data) {
-  return request(`/tasks/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  })
+export function updateTask(id, data) {
+  return storage.saveTask({ ...data, id })
 }
 
-export async function renameTask(id, name) {
-  return request(`/tasks/${id}/rename`, {
-    method: 'PUT',
-    body: JSON.stringify({ name })
-  })
+export function renameTask(id, name) {
+  return storage.renameTask(id, name)
 }
 
-export async function archiveTask(id, archived) {
-  return request(`/tasks/${id}/archive`, {
-    method: 'PUT',
-    body: JSON.stringify({ archived })
-  })
+export function archiveTask(id) {
+  return storage.archiveTask(id)
 }
 
-export async function deleteTask(id) {
-  return request(`/tasks/${id}`, {
-    method: 'DELETE'
-  })
+export function deleteTask(id) {
+  return storage.deleteTask(id)
 }

@@ -1,31 +1,39 @@
-import { request } from './index'
+/**
+ * API 配置相关函数 - 使用本地存储
+ */
+import * as storage from '../utils/storage'
+import * as llm from '../utils/llm'
 
-export async function getApiConfigs() {
-  return request('/api-config')
+export function getApiConfigs() {
+  return storage.getApiConfigs()
 }
 
-export async function getActiveConfig() {
-  return request('/api-config/active')
+export function getActiveConfig() {
+  return storage.getActiveConfig()
 }
 
-export async function createApiConfig(data) {
-  return request('/api-config', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  })
+export function createApiConfig(data) {
+  return storage.saveApiConfig(data)
 }
 
-export async function updateApiConfig(id, data) {
-  return request(`/api-config/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  })
+export function updateApiConfig(id, data) {
+  return storage.saveApiConfig({ ...data, id })
 }
 
-export async function deleteApiConfig(id) {
-  return request(`/api-config/${id}`, {
-    method: 'DELETE'
-  })
+export function deleteApiConfig(id) {
+  return storage.deleteApiConfig(id)
+}
+
+export function activateApiConfig(id) {
+  return storage.activateApiConfig(id)
+}
+
+export async function testApiConfig(id) {
+  const config = storage.getApiConfigs().find(c => c.id === id)
+  if (!config) {
+    return { success: false, message: '配置不存在' }
+  }
+  return llm.testApiConnection(config)
 }
 
 export async function activateApiConfig(id) {
