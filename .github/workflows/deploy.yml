@@ -33,8 +33,6 @@ jobs:
 
       - name: Build
         run: cd client && npm run build
-        env:
-          GITHUB_PAGES: true
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
